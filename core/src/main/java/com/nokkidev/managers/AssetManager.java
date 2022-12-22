@@ -31,10 +31,10 @@ public class AssetManager {
 	public static void initAssetsCore(){
 		ConstantsManager.init();
 
-		entityAtlas = new TextureAtlas(ASSET_PATH + "EntitiesAtlas.atlas");
-		GUIAtlas = new TextureAtlas(ASSET_PATH + "guiAtlas.atlas");
-		fontWhite = new BitmapFont(new FileHandle(ASSET_PATH + "Font/AstoniaWhite.fnt"), false);
-		black = new BitmapFont(new FileHandle(ASSET_PATH + "Font/AstoniaBlack.fnt"), false);
+		entityAtlas = new TextureAtlas("EntitiesAtlas.atlas");
+		GUIAtlas = new TextureAtlas("guiAtlas.atlas");
+		fontWhite = new BitmapFont(new FileHandle("Font/AstoniaWhite.fnt"), false);
+		black = new BitmapFont(new FileHandle("Font/AstoniaBlack.fnt"), false);
 
 		menuSkin = new Skin(GUIAtlas);
 
