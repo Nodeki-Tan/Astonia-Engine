@@ -83,7 +83,7 @@ public class GameCore implements Runnable{
 			terminateApp();
 		}
 
-		MainCore.camera.tick();
+		MainCore.camera.tick(delta);
 
 		if (StateManager.getCurrentState() != null && StateManager.getCurrentState().done) {
 			StateManager.getCurrentState().tick(delta);

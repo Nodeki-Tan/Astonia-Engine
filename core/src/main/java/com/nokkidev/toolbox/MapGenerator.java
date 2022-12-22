@@ -13,6 +13,7 @@ public class MapGenerator {
 
     static int waterLevel = 256 + 64;
 
+    /*
     public static Chunk generateData(int x, int y){
 
         float[] biomes;
@@ -135,6 +136,7 @@ public class MapGenerator {
         return new Chunk(data);
 
     }
+    */
 
     static boolean checkPoint(float x, float y, float scale, float posibility){
 

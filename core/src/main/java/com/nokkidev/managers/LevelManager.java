@@ -18,9 +18,10 @@ public class LevelManager {
 
     private static Map<Vector2, BoundingBox> levelPhysicsAreas = new HashMap<Vector2, BoundingBox>();
 
-     static int LEVEL_HEIGHT =0;
+    static int LEVEL_HEIGHT =0;
     static int LEVEL_WIDTH;
 
+    /*
     public static void createLevel(int _LEVEL_HEIGHT, int _LEVEL_WIDTH){
 
         LEVEL_HEIGHT = _LEVEL_HEIGHT;
@@ -41,7 +42,6 @@ public class LevelManager {
 
     }
 
-    /*
     public static int generateLevel(int xPos, int LEVEL_HEIGHT, int LEVEL_WIDTH){
 
         createLevel(LEVEL_HEIGHT, LEVEL_WIDTH);

@@ -3,9 +3,15 @@ package com.nokkidev.managers;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.nokkidev.core.MainCore;
 
 public class AssetManager {
 
@@ -28,13 +34,17 @@ public class AssetManager {
 	public static byte COLOR_PURPLE = pointer++;
 	public static byte COLOR_ORANGE = pointer++;
 
+
+	public static ModelBuilder modelBuilder;
+	public static Model box;
+
 	public static void initAssetsCore(){
 		ConstantsManager.init();
 
-		entityAtlas = new TextureAtlas("EntitiesAtlas.atlas");
-		GUIAtlas = new TextureAtlas("guiAtlas.atlas");
-		fontWhite = new BitmapFont(new FileHandle("Font/AstoniaWhite.fnt"), false);
-		black = new BitmapFont(new FileHandle("Font/AstoniaBlack.fnt"), false);
+		entityAtlas = new TextureAtlas(ASSET_PATH + "EntitiesAtlas.atlas");
+		GUIAtlas = new TextureAtlas(ASSET_PATH + "guiAtlas.atlas");
+		fontWhite = new BitmapFont(new FileHandle(ASSET_PATH + "Font/AstoniaWhite.fnt"), false);
+		black = new BitmapFont(new FileHandle(ASSET_PATH + "Font/AstoniaBlack.fnt"), false);
 
 		menuSkin = new Skin(GUIAtlas);
 
@@ -49,6 +59,12 @@ public class AssetManager {
 		COLORS[COLOR_ORANGE] = Color.ORANGE;
 
 
+		// a just in case tool
+		modelBuilder = new ModelBuilder();
+
+		box = modelBuilder.createBox(2f,2f,2f,
+				new Material(ColorAttribute.createDiffuse(COLORS[COLOR_BLUE])),
+				VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal);
 
 		TileManager.loadTiles();
 	}

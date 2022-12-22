@@ -4,51 +4,78 @@ import com.nokkidev.core.MapCore;
 
 public class Chunk {
 	
-	private short[] tiles;
+	private int[] tiles;
 
 	private boolean isSaved = true;
 
-	public Chunk(short[] tiles) {
+	public Chunk(int[] tiles) {
 		this.tiles = tiles;
 	}
 
-	public short getTile(int x, int y) {
-		
+	public int getTile(int x, int y, int z) {
+
 		if(x <= -1) {
 			x += MapCore.CHUNK_WIDTH;
 		}
-		
+
 		if(y <= -1) {
-			y += MapCore.CHUNK_WIDTH;
+			y += 1;
+		}
+
+		if(z <= -1) {
+			z += MapCore.CHUNK_WIDTH;
 		}
 
 		//System.out.println("Tile in [" + x + "," + y + "]");
-		
-		int index = x + (y * MapCore.CHUNK_WIDTH);
-		
+
+		int index = x + (y * (MapCore.CHUNK_WIDTH * MapCore.CHUNK_WIDTH)) + (z * MapCore.CHUNK_WIDTH);
+
 		return tiles[index];
 	}
-	
-	public void setTile(int x, int y, short value) {
-		
+
+	public void setTile(int x, int y, int z, short value) {
+
 		if(x <= -1) {
 			x += MapCore.CHUNK_WIDTH;
 		}
-		
+
 		if(y <= -1) {
-			y += MapCore.CHUNK_WIDTH;
+			y += 1;
 		}
 
-		//System.out.println("Tile in [" + x + "," + y + "]");
-		
-		int index = x + (y * MapCore.CHUNK_WIDTH);
-		
+		if(z <= -1) {
+			z += MapCore.CHUNK_WIDTH;
+		}
+
+		//System.out.println("Tile in [" + x + "," + y + "," + z +"]");
+
+		int index = x + (y * (MapCore.CHUNK_WIDTH * MapCore.CHUNK_WIDTH)) + (z * MapCore.CHUNK_WIDTH);
+
 		tiles[index] = value;
-		
-		isSaved = false; 
+
+		// Here i left this part of Gaia 3d that allows to save up time on generation by setting
+		// how much airblocks there is in a chunk, if the chunk is all air, then we skip
+		// making a model for it
+		/*
+		if(value == 0){
+			airBlocks++;
+		} else if(tiles[index] == 0) {
+			airBlocks--;
+		}
+		*/
+
+
+		isSaved = false;
+
+		// Here we make the model update
+		/*
+		if(model != null) {
+			model.Update();
+		}
+		*/
 	}
 
-	public short[] getTiles() {
+	public int[] getTiles() {
 		return tiles;
 	}
 
