@@ -76,6 +76,8 @@ public class AssetManager {
 		fontWhite.dispose();
 		black.dispose();
 
+		box.dispose();
+
 		TileManager.cleanUp();
 		LevelManager.cleanUp();
 	}

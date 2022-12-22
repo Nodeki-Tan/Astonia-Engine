@@ -141,7 +141,7 @@ public class MainCore extends Game {
 		}
 
 		// Here i update the render cam to the position of the game camera
-		renderCamera.position.set(camera.getPosition());
+		camera.updatePosition(renderCamera);
 		renderCamera.update();
 
 		//render Entities and the Map and stuff

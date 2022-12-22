@@ -3,16 +3,24 @@ package com.nokkidev.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
+import com.badlogic.gdx.math.*;
 import com.nokkidev.core.MapCore;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector3;
 
 public class Camera {
-	
+
 	private Vector3 position = new Vector3(0, 0, 3);
-	private float pitch;
-	private float yaw;
-	private float roll;
+	private static final Quaternion quat = new Quaternion();
+	private float pitch = 0;
+	private float yaw = 0;
+	private float roll = 0;
 
 	private float cameraSensibility = 0.1f;
 
@@ -32,59 +40,84 @@ public class Camera {
 			speed = 2f;
 		}
 
-		translate(delta);
 		move();
+		translate(delta);
 
 	}
 
 	public void translate(float delta){
 
-		if(Gdx.input.isKeyPressed(Input.Keys.W)){
-			moveAtZ = -speed * delta;
-		}else if(Gdx.input.isKeyPressed(Input.Keys.S)){
-			moveAtZ = speed * delta;
+		final Input input = Gdx.input;
+
+		final boolean left = input.isKeyPressed(Keys.A);
+		final boolean right = input.isKeyPressed(Keys.D);
+		final float speed = (input.isKeyPressed(Keys.CONTROL_LEFT) ? 24.0f : 12.0f)*delta;
+		final float rad = yaw / 180f * MathUtils.PI;
+		float PI2 = MathUtils.PI/4.5f;
+
+		final Vector3 pos = position;
+
+		if (input.isKeyPressed(Keys.W)) {
+			if (left) {
+				pos.x += MathUtils.sin(rad+PI2) * speed;
+				pos.z += MathUtils.cos(rad+PI2) * speed;
+			} else if (right) {
+				pos.x += MathUtils.sin(rad-PI2) * speed;
+				pos.z += MathUtils.cos(rad-PI2) * speed;
+			} else {
+				pos.x += MathUtils.sin(rad) * speed;
+				pos.z += MathUtils.cos(rad) * speed;
+			}
+		} else if (input.isKeyPressed(Keys.S)) {
+			if (left) {
+				pos.x -= MathUtils.sin(rad-PI2) * speed;
+				pos.z -= MathUtils.cos(rad-PI2) * speed;
+			} else if (right) {
+				pos.x -= MathUtils.sin(rad+PI2) * speed;
+				pos.z -= MathUtils.cos(rad+PI2) * speed;
+			} else {
+				pos.x -= MathUtils.sin(rad) * speed;
+				pos.z -= MathUtils.cos(rad) * speed;
+			}
 		} else {
-			moveAtZ = 0;
+			PI2 = MathUtils.PI*0.5f;
+			if (left) {
+				pos.x -= MathUtils.sin(rad-PI2) * speed;
+				pos.z -= MathUtils.cos(rad-PI2) * speed;
+			} else if (right) {
+				pos.x -= MathUtils.sin(rad+PI2) * speed;
+				pos.z -= MathUtils.cos(rad+PI2) * speed;
+			}
 		}
 
-		if(Gdx.input.isKeyPressed(Input.Keys.D)){
-			moveAtX = speed * delta;
-		}else if(Gdx.input.isKeyPressed(Input.Keys.A)){
-			moveAtX = -speed * delta;
-		} else {
-			moveAtX = 0;
+		if (input.isKeyPressed(Keys.SPACE)) {
+			pos.y += speed;
+		} else if (input.isKeyPressed(Keys.SHIFT_LEFT)) {
+			pos.y -= speed;
 		}
-
-		if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
-			position.y+= speed * delta;
-		}else if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)){
-			position.y-= speed * delta;
-		}
-
-		//moving
-		float dx = (float) -(moveAtZ * Math.sin(Math.toRadians(yaw)));
-		float dz = (float) (moveAtZ * Math.cos(Math.toRadians(yaw)));
-
-		//strafing
-		float sx = (float) -(moveAtX * Math.sin(Math.toRadians(yaw - 90.f)));
-		float sz = (float) (moveAtX * Math.cos(Math.toRadians(yaw - 90.f)));
-
-		position.x += dx + sx;
-		position.z += dz + sz;
-
+		
+		setPosition(pos);
 	}
 
 	public void move(){
+		yaw +=  -Gdx.input.getDeltaX() * cameraSensibility;
+		pitch += Gdx.input.getDeltaY() * cameraSensibility;
+	}
 
-		float mouseDeltaX = previousMousePosition.x - Gdx.input.getX();
-		float mouseDeltaY = previousMousePosition.y - Gdx.input.getY();
-		previousMousePosition.set(Gdx.input.getX(), Gdx.input.getY());
-		Vector2 deltaMouse = new Vector2(-mouseDeltaX * cameraSensibility,
-				mouseDeltaY * cameraSensibility);
+	public void updateRotation(PerspectiveCamera cam) {
+		//reset quaternion and then set its rotation.
+		quat.setEulerAngles(yaw, pitch, 0f);
 
-		yaw += mouseDeltaX * cameraSensibility;
-		pitch += -mouseDeltaY * cameraSensibility;
+		//set camera angle back to zero and rotate it.
+		cam.direction.set(0f, 0f, 1f);
+		cam.up.set(0f, 1f, 0f);
+		cam.rotate(quat);
+	}
 
+	public void updatePosition(PerspectiveCamera cam) {
+
+		cam.position.set(getPosition());
+		updateRotation(cam);
 	}
 
     public void setPosition(Vector3 position) {
@@ -112,5 +145,5 @@ public class Camera {
 	public float getRoll() {
 		return roll;
 	}
-	
+
 }
