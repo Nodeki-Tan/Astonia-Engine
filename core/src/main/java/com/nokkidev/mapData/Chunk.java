@@ -2,89 +2,167 @@ package com.nokkidev.mapData;
 
 import com.nokkidev.core.MapCore;
 
-public class Chunk {
-	
-	private int[] tiles;
+import static  com.nokkidev.mapData.World.world;
 
+/** The chunk with  */
+public class Chunk
+{
+	/** Direct access to the block data. */
+	public static final int SIZE = 16;
+
+	/** The direct access to this block data. */
+	public final int[][][] Tiles;
+
+	/** The ChunkRegion of this chunk's parents. */
+	public final ChunkRegion region;
+
+	/** Chunk position. */
+	public final int x, y, z;
+
+	/** Is this chunk needs update their mesh. */
+	public boolean isDirty = false;
+
+	/** Is this a new unloaded chunk. Than build the chunk model when player  */
+	public boolean isNewChunk = true;
+
+	/** Is this chunk safe to modify TileDatabase. */
+	public volatile boolean isChunkSafe = false;
+
+	// to check if the chunk is saved to disk
 	private boolean isSaved = true;
 
-	public Chunk(int[] tiles) {
-		this.tiles = tiles;
+	// This values holds in how much airTiles it holds, if the number is equal to
+	// A whole chunk, we skip rendering or making it a model
+	private int airTiles = 0;
+
+	public Chunk(ChunkRegion region, int xChunk, int yChunk, int zChunk)
+	{
+		this.region = region;
+		this.x = xChunk;
+		this.y = yChunk;
+		this.z = zChunk;
+		Tiles = new int[SIZE][SIZE][SIZE];
 	}
 
-	public int getTile(int x, int y, int z) {
+	public int getTile(int x, int y, int z)
+	{
+		if (x < 0 || y < 0 || z < 0 || x > 15 || y > 15 || z > 15)
+			return TileDatabase.AIR;
 
-		if(x <= -1) {
-			x += MapCore.CHUNK_WIDTH;
-		}
-
-		if(y <= -1) {
-			y += 1;
-		}
-
-		if(z <= -1) {
-			z += MapCore.CHUNK_WIDTH;
-		}
-
-		//System.out.println("Tile in [" + x + "," + y + "]");
-
-		int index = x + (y * (MapCore.CHUNK_WIDTH * MapCore.CHUNK_WIDTH)) + (z * MapCore.CHUNK_WIDTH);
-
-		return tiles[index];
+		return Tiles[x][y][z];
 	}
 
-	public void setTile(int x, int y, int z, short value) {
+	public int getTileSmart(int x, int y, int z)
+	{
+	/* Commented due to broken from the caller.
+	if (x>>4 == this.x && y>>4 == this.y && z>>4 == this.z) {
+		return TileDatabase[x&15][y&15][z&15];
+	} */
+		return world.getTile(x, y, z);
+	}
 
-		if(x <= -1) {
-			x += MapCore.CHUNK_WIDTH;
-		}
+	public void setTile(int x, int y, int z, int value)
+	{
+		if (x < 0 || y < 0 || z < 0 || x > 15 || y > 15 || z > 15)
+			return;
 
-		if(y <= -1) {
-			y += 1;
-		}
-
-		if(z <= -1) {
-			z += MapCore.CHUNK_WIDTH;
-		}
-
-		//System.out.println("Tile in [" + x + "," + y + "," + z +"]");
-
-		int index = x + (y * (MapCore.CHUNK_WIDTH * MapCore.CHUNK_WIDTH)) + (z * MapCore.CHUNK_WIDTH);
-
-		tiles[index] = value;
-
-		// Here i left this part of Gaia 3d that allows to save up time on generation by setting
-		// how much airblocks there is in a chunk, if the chunk is all air, then we skip
-		// making a model for it
-		/*
 		if(value == 0){
-			airBlocks++;
-		} else if(tiles[index] == 0) {
-			airBlocks--;
+			airTiles++;
+		} else if(Tiles[x][y][z] == 0) {
+			airTiles--;
 		}
-		*/
-
 
 		isSaved = false;
 
-		// Here we make the model update
-		/*
-		if(model != null) {
-			model.Update();
-		}
-		*/
+		Tiles[x][y][z] = value;
 	}
 
-	public int[] getTiles() {
-		return tiles;
+	/** &15 (mod) will be applied in this method. TODO: Try to optimize it. */
+	// TODO: Move to map core to optimize this.
+	public void editTile(int x, int y, int z, Tile block)
+	{
+		final int xFix   = x&15, yFix   = y&15, zFix   = z&15;
+		final int xChunk = x>>4, yChunk = y>>4, zChunk = z>>4;
+		Tiles[xFix][yFix][zFix] = block.id;
+		isDirty = true;
+
+		Chunk chunk;
+		final World world = getWorld();
+		if (yFix == 0) {
+			chunk = world.getChunk(xChunk, yChunk-1, zChunk);
+			if (chunk != null) chunk.isDirty = true;
+		}
+		if (yFix == 15) {
+			chunk = world.getChunk(xChunk, yChunk+1, zChunk);
+			if (chunk != null) chunk.isDirty = true;
+		}
+		if (xFix == 0) {
+			chunk = world.getChunk(xChunk-1, yChunk, zChunk);
+			if (chunk != null) chunk.isDirty = true;
+		}
+		if (xFix == 15) {
+			chunk = world.getChunk(xChunk+1, yChunk, zChunk);
+			if (chunk != null) chunk.isDirty = true;
+		}
+		if (zFix == 0) {
+			chunk = world.getChunk(xChunk, yChunk, zChunk-1);
+			if (chunk != null) chunk.isDirty = true;
+		}
+		if (zFix == 15) {
+			chunk = world.getChunk(xChunk, yChunk, zChunk+1);
+			if (chunk != null) chunk.isDirty = true;
+		}
+	}
+
+	public void clear() {
+		for (int x = 0; x < SIZE; x++)
+		{
+			for (int y = 0; y < SIZE; y++)
+			{
+				for (int z = 0; z < SIZE; z++)
+				{
+					Tiles[x][y][z] = TileDatabase.AIR;
+				}
+			}
+		}
+	}
+
+	public boolean getCanRender() {
+		if (airTiles >= 1)
+			return true;
+
+		if (airTiles >= MapCore.CHUNK_DATA_SIZE)
+			return false;
+		
+		return false;
+	}
+
+	public int getAirTiles() {
+		return airTiles;
+	}
+
+	public void setAirTiles(int airTiles) {
+		this.airTiles = airTiles;
 	}
 
 	public void setSaved() {
 		isSaved = true;
 	}
 
+	public int[][][] getTiles() {
+		return Tiles;
+	}
+
 	public boolean getSaved() {
 		return isSaved;
 	}
 
+	public void setNewChunk(boolean isNew) {
+		isNewChunk = isNew;
+		isChunkSafe = isNew;
+	}
+
+	public World getWorld() {
+		return region.world;
+	}
 }

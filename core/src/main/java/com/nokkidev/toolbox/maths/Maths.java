@@ -1,7 +1,10 @@
-package com.nokkidev.toolbox;
+package com.nokkidev.toolbox.maths;
 
 
 import com.badlogic.gdx.math.Vector2;
+import com.nokkidev.physics.ResultPair;
+
+import java.util.List;
 
 public class Maths {
 
@@ -107,5 +110,38 @@ public class Maths {
 		return result;
 	}
 
+
+	public static int parseInt(String number){
+		try{
+			return Integer.parseInt(number);
+		}catch(NumberFormatException e){
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	public static void sort(List<ResultPair> list){
+		ResultPair temp = null;
+
+		for (int i = 0; i < list.size(); i++)
+		{
+			for (int j = 0; j < list.size(); j++)
+			{
+				float a = list.get(i).contactTime;
+
+				float b = list.get(j).contactTime;
+
+				if (a < b)
+				{
+					temp = list.get(i);
+
+					list.set(i, list.get(j));
+
+					list.set(j, temp);
+				}
+			}
+		}
+
+	}
 
 }

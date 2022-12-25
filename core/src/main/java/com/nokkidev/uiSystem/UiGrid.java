@@ -178,12 +178,12 @@ public class UiGrid {
     }
 
     public final void updateKeyboardHeld(float delta) {
-        getBlockAt(cursorX, cursorY).keyboardHoverTimer.tick(delta);
+        getTileAt(cursorX, cursorY).keyboardHoverTimer.tick(delta);
     }
 
     public final void press() {
 
-        getBlockAt(cursorX, cursorY).press();
+        getTileAt(cursorX, cursorY).press();
 
     }
 
@@ -197,7 +197,7 @@ public class UiGrid {
     }
     */
 
-    public UiSprite getBlockAt(int x, int y) {
+    public UiSprite getTileAt(int x, int y) {
         UiSprite sprite = ItemsList.get(new Vector2(x,y));
 
         if(sprite == null) return null;

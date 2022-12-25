@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.nokkidev.core.MainCore;
+import com.nokkidev.mapData.TileDatabase;
 
 public class AssetManager {
 
@@ -66,7 +66,7 @@ public class AssetManager {
 				new Material(ColorAttribute.createDiffuse(COLORS[COLOR_BLUE])),
 				VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal);
 
-		TileManager.loadTiles();
+		//TileDatabase.init();
 	}
 	
 	public static void cleanUp() {
@@ -77,8 +77,6 @@ public class AssetManager {
 		black.dispose();
 
 		box.dispose();
-
-		TileManager.cleanUp();
 		LevelManager.cleanUp();
 	}
 	

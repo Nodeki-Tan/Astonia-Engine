@@ -1,5 +1,7 @@
 package com.nokkidev.toolbox;
 
+import com.nokkidev.inputs.EventListener;
+
 public class Timer {
 
     boolean active = false;

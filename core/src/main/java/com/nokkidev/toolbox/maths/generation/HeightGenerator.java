@@ -1,6 +1,7 @@
-package com.nokkidev.toolbox;
+package com.nokkidev.toolbox.maths.generation;
 
 import com.nokkidev.core.MapCore;
+import com.nokkidev.toolbox.maths.Maths;
 
 public class HeightGenerator {
 
@@ -43,7 +44,7 @@ public class HeightGenerator {
     public static float[] GenerateNoiseMap(int x, int z){
 
         int octaves = 4;
-        float scale = 80f;
+        float scale = 2000f;
 
         float persistance = .25f;
         float lacunarity = 4f;
@@ -74,7 +75,7 @@ public class HeightGenerator {
                     frequency *= lacunarity;
                 }
 
-                noiseMap[i + (o * CHUNK_WIDTH)] = Maths.Normaliced(noiseHeight, 1, 0) * 6;
+                noiseMap[i + (o * CHUNK_WIDTH)] = Maths.Normaliced(noiseHeight, 1, 0) * 4;
             }
         }
 
@@ -123,6 +124,50 @@ public class HeightGenerator {
         return noiseMap;
     }
 
+    public static float[] GenerateHeightMap(int x, int z, float[] biomeMap){
+
+        int octaves = 8;
+        float scale = 800f;
+
+        float persistance = .25f;
+        float lacunarity = 3f;
+
+        int solidGroundHeight = 256;
+        int terrainHeight = 128;
+
+        float[] noiseMap = new float[CHUNK_WIDTH * CHUNK_WIDTH];
+
+        float amplitude = 1;
+        float frequency = 1;
+
+        for (int i = 0; i < CHUNK_WIDTH; i++)
+        {
+            for (int o = 0; o < CHUNK_WIDTH; o++)
+            {
+
+                amplitude = 1;
+                frequency = 1;
+                float noiseHeight = 0;
+
+                for (int j = 0; j < octaves; j++)
+                {
+                    float sampleX = (i + x) / scale * frequency;
+                    float sampleY = (o + z) / scale * frequency;
+
+                    float perlinValue = (float) (SimplexNoise.noise(sampleX, sampleY) + 1) * 0.5f;
+                    noiseHeight += perlinValue * amplitude;
+
+                    amplitude *= persistance;
+                    frequency *= lacunarity;
+                }
+
+                noiseMap[i + (o * CHUNK_WIDTH)] = (Maths.Normaliced(noiseHeight, 1, 0) * terrainHeight) + solidGroundHeight;
+            }
+        }
+
+        return noiseMap;
+    }
+
     public static float Evaluate2dPoint(float x, float y, float scale){
 
         int octaves = 4;
@@ -145,6 +190,45 @@ public class HeightGenerator {
             float sampleY = y / scale * frequency;
 
             float perlinValue = (float) (SimplexNoise.noise(sampleX, sampleY) + 1) * 0.5f;
+            noiseHeight += perlinValue * amplitude;
+
+            amplitude *= persistance;
+            frequency *= lacunarity;
+        }
+
+        value = Maths.Normaliced(noiseHeight, 1, 0);
+
+        return value;
+    }
+
+
+
+
+
+    public static float Evaluate3dPoint(float x, float y, float z){
+
+        int octaves = 2;
+        float scale = 200f;
+
+        float persistance = .25f;
+        float lacunarity = 5f;
+
+        float value = 0f;
+
+        float amplitude = 1;
+        float frequency = 1;
+
+        amplitude = 1;
+        frequency = 1;
+        float noiseHeight = 0;
+
+        for (int j = 0; j < octaves; j++)
+        {
+            float sampleX = x / scale * frequency;
+            float sampleY = y / scale * frequency;
+            float sampleZ = z / scale * frequency;
+
+            float perlinValue = (float) (SimplexNoise.noise(sampleX, sampleY, sampleZ) + 1) * 0.5f;
             noiseHeight += perlinValue * amplitude;
 
             amplitude *= persistance;

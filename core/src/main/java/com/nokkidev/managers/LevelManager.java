@@ -1,14 +1,10 @@
 package com.nokkidev.managers;
 
 import com.badlogic.gdx.math.Vector2;
-import com.nokkidev.core.MainCore;
-import com.nokkidev.core.MapCore;
 import com.nokkidev.mapData.Chunk;
 import com.nokkidev.physics.*;
-import com.nokkidev.toolbox.MapGenerator;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class LevelManager {
 
@@ -108,12 +104,12 @@ public class LevelManager {
                 }
 
 
-                if (TileManager.TILE_LIST.get(actual).isSolid()){
+                if (TileDatabase.TILE_LIST.get(actual).isSolid()){
 
-                    if (!TileManager.TILE_LIST.get(up).isSolid()||
-                        !TileManager.TILE_LIST.get(down).isSolid()||
-                        !TileManager.TILE_LIST.get(left).isSolid()||
-                        !TileManager.TILE_LIST.get(right).isSolid()){
+                    if (!TileDatabase.TILE_LIST.get(up).isSolid()||
+                        !TileDatabase.TILE_LIST.get(down).isSolid()||
+                        !TileDatabase.TILE_LIST.get(left).isSolid()||
+                        !TileDatabase.TILE_LIST.get(right).isSolid()){
 
                         BoundingBox AABB = new StaticBoundingBox(
                                 globalPos,

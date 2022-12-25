@@ -1,8 +1,7 @@
 package com.nokkidev.physics;
 
 import com.badlogic.gdx.math.Vector2;
-import com.nokkidev.toolbox.Maths;
-import com.nokkidev.toolbox.Utils;
+import com.nokkidev.toolbox.maths.Maths;
 
 import java.util.*;
 
@@ -199,7 +198,7 @@ public class PhysicsSolver {
             }
         }
 
-        Utils.sort(list);
+        Maths.sort(list);
 
         for (int i = 0; i < list.size(); i++){
 

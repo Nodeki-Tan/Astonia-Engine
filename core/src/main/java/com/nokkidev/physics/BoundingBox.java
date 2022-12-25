@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.nokkidev.entities.DebugSquareEntity;
 import com.nokkidev.entities.Entity;
 import com.nokkidev.managers.AssetManager;
-import com.nokkidev.toolbox.Maths;
+import com.nokkidev.toolbox.maths.Maths;
 
 public class BoundingBox extends Entity {
 

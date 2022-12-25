@@ -95,7 +95,7 @@ public class Camera {
 		} else if (input.isKeyPressed(Keys.SHIFT_LEFT)) {
 			pos.y -= speed;
 		}
-		
+
 		setPosition(pos);
 	}
 

@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
-import com.nokkidev.toolbox.EventListener;
+import com.nokkidev.inputs.EventListener;
 
 public class UiNinepatch extends UiSprite{
 
